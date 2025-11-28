@@ -1,34 +1,59 @@
 import * as THREE from "three";
 import BaseObject from "./BaseObject.js";
+import { MeshObject } from "./MeshObject.js";
+import { assetManager } from "../utils/assetManager.js";
+import { sampleMC } from "../utils/materialCoefficents.js";
 
 export default class SeeSaw extends BaseObject {
-  constructor(seeSawDim = { width: 5, height: 0.1, depth: 1 }) {
+  constructor() {
     super();
 
-    this.seeSawDim = seeSawDim;
+    this.seeSawDim = {
+      plank: { width: 5, height: 0.1, depth: 1 },
+      wedge: { width: 0.5, height: 0.5, depth: 0.45 },
+    };
 
-    const seeSawGeo = new THREE.BoxGeometry(
-      seeSawDim.width,
-      seeSawDim.height,
-      seeSawDim.depth
+    // STATIC PART
+    this.wedge = new MeshObject(
+      assetManager.geometry.prism,
+      sampleMC,
+      "SeeSawWedge"
     );
+    this.wedge.scale.set(
+      this.seeSawDim.wedge.width,
+      this.seeSawDim.wedge.height,
+      this.seeSawDim.wedge.depth
+    );
+    this.wedge.position.y = this.seeSawDim.wedge.height / 2;
+    this.add(this.wedge);
 
-    const seeSawMat = new THREE.MeshStandardMaterial({ color: 0x55ff55 });
-    this.seeSawObj = new THREE.Mesh(seeSawGeo, seeSawMat);
-    this.add(this.seeSawObj);
+    // ROTATING PART
+    this.seeSawPart = new THREE.Group();
+
+    const plankGeo = new THREE.BoxGeometry(
+      this.seeSawDim.plank.width,
+      this.seeSawDim.plank.height,
+      this.seeSawDim.plank.depth
+    );
+    this.plankObj = new MeshObject(plankGeo, sampleMC, "SeeSawPlank");
+    this.seeSawPart.add(this.plankObj);
+    this.plankObj.position.y = this.seeSawDim.wedge.height * 1.5;
 
     const seeSawRailGeo = new THREE.BoxGeometry(
-      seeSawDim.height,
-      seeSawDim.depth / 2,
-      seeSawDim.depth
+      this.seeSawDim.plank.height,
+      this.seeSawDim.plank.depth / 2,
+      this.seeSawDim.plank.depth
     );
-    this.seeSawRailObj = new THREE.Mesh(seeSawRailGeo, seeSawMat);
-    this.seeSawRailObj.position.x = seeSawDim.width / 2 - seeSawDim.height / 2;
-    this.seeSawRailObj.position.y = seeSawDim.depth / 4;
-    this.seeSawObj.add(this.seeSawRailObj);
+    this.seeSawRailObj = new MeshObject(seeSawRailGeo, sampleMC, "SeeSawRail");
+    this.plankObj.add(this.seeSawRailObj);
+    this.seeSawRailObj.position.x =
+      this.seeSawDim.plank.width / 2 - this.seeSawDim.plank.height / 2;
+    this.seeSawRailObj.position.y = this.seeSawDim.plank.depth / 4;
+
+    this.add(this.seeSawPart);
 
     // physics state
-    this.angle = -Math.PI / 15;
+    this.angle = -Math.PI / 12;
     this.targetAngle = -this.angle;
     this.angularVelocity = 0;
     this.angularAcceleration = 5;
@@ -62,9 +87,9 @@ export default class SeeSaw extends BaseObject {
   }
 
   animate(dt) {
-    this.rotation.z = this.angle;
+    this.seeSawPart.rotation.z = this.angle;
 
     this.updateMatrixWorld(true);
-    this.collider.setFromObject(this.seeSawObj);
+    this.collider.setFromObject(this.seeSawPart);
   }
 }
