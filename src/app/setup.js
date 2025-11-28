@@ -52,14 +52,18 @@ export async function setup() {
   });
 
   // Populate the textures array - indices match textureIndex in materialCoefficents
-  globalUniforms.textures.value = [];
+  globalUniforms.textures.value = [
+    assetManager.texture.stand,
+    assetManager.texture.wood,
+    assetManager.texture.marble2,
+    // assetManager.texture.viensMarble,
+  ];
   globalUniforms.lights.value = [
     cloneLightCoefficients(pointLight1LC),
     cloneLightCoefficients(spotLight1LC),
     cloneLightCoefficients(spotLight2LC),
-    cloneLightCoefficients(spotLight3LC),
   ];
-  globalUniforms.numLights.value = 4;
+  globalUniforms.numLights.value = 3;
   globalUniforms.usePhong.value = 1;
 
   // const grid = new THREE.GridHelper(400, 400);

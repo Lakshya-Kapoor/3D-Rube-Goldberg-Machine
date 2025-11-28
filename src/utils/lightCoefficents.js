@@ -33,7 +33,7 @@ export const pointLight1LC = {
 };
 
 export const spotLight1LC = {
-  position: new THREE.Vector3(0, 80, 0),
+  position: new THREE.Vector3(50, 80, 0),
   Ia: new THREE.Vector3(0.3, 0.3, 0.3),
   Id: new THREE.Vector3(1.0, 1.0, 1.0),
   Is: new THREE.Vector3(1.0, 1.0, 1.0),
@@ -48,7 +48,7 @@ export const spotLight1LC = {
   outerCutoff: Math.cos(13.0 * (Math.PI / 180)), // 17.5 degrees in radians
 };
 export const spotLight2LC = {
-  position: new THREE.Vector3(0, 80, 0),
+  position: new THREE.Vector3(0, 80, 50),
   Ia: new THREE.Vector3(0.3, 0.3, 0.3),
   Id: new THREE.Vector3(1.0, 1.0, 1.0),
   Is: new THREE.Vector3(1.0, 1.0, 1.0),

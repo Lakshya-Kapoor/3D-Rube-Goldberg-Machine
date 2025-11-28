@@ -25,7 +25,7 @@ struct Light {
     float outerCutoff;
 };
 
-uniform Light lights[4];
+uniform Light lights[3];
 
 varying vec2 vUv;
 varying vec3 vNormal;

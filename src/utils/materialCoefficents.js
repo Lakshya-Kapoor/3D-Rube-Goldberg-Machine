@@ -42,7 +42,7 @@ export const roomMC = {
   ks: { value: new THREE.Vector3(0.5, 0.5, 0.5) },
   shininess: { value: 32.0 },
   useTexture: { value: 1 },
-  textureIndex: { value: 1 },
+  textureIndex: { value: 2 },
 };
 
 export const standMC = {

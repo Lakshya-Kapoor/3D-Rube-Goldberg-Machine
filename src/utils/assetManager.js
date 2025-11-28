@@ -6,8 +6,8 @@ class AssetManager {
   TEXTURE_DIR = "./assets/textures";
 
   constructor() {
-    this._model_names = [];
-    this._texture_names = ["stand", "wood"];
+    this._model_names = ["wedge"];
+    this._texture_names = ["stand", "wood", "marble2"];
     this.geometry = {};
     this.texture = {};
     this._plyLoader = new PLYLoader();
