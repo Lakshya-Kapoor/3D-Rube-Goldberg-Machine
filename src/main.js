@@ -1,5 +1,11 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { setup } from "./app/setup.js";
+import { uvMap } from "./utils/uvMap.js";
+import { assetManager } from "./utils/assetManager.js";
+import Pendulum from "./objects/Pendulum.js";
+
+await setup();
 
 // Get canvas element
 const canvas = document.getElementById("main-canvas");
@@ -15,7 +21,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(3, 3, 3);
+camera.position.set(0, 0, 10);
 
 // Create renderer
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -29,11 +35,9 @@ const controls = new OrbitControls(camera, renderer.domElement);
 const axisHelper = new THREE.AxesHelper(5);
 scene.add(axisHelper);
 
-// Create cube
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshStandardMaterial({ color: 0x6c5ce7 });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+// pendulum
+const pendulum = new Pendulum();
+scene.add(pendulum);
 
 // Add lighting
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -50,11 +54,17 @@ window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
+const clock = new THREE.Clock();
+
 // Animation loop
 function animate() {
-  requestAnimationFrame(animate);
+  const dt = clock.getDelta();
+
+  pendulum.update(dt);
+
   controls.update();
   renderer.render(scene, camera);
+  requestAnimationFrame(animate);
 }
 
 animate();
