@@ -10,11 +10,11 @@ export default class InclinedPlane extends BaseObject {
   constructor () {
     super();
 
-    this.xSlantLen = 10;
+    this.xSlantLen = 20;
     this.zSlantLen = 10;
     this.planeWidth = 5;
-    this.startHieght = 20;
-    this.turnHeight = 10;
+    this.startHieght = 15;
+    this.turnHeight = 7.5;
     this.endHeight = 0;
     this.sideWallWidth = 2;
 
@@ -66,16 +66,17 @@ export default class InclinedPlane extends BaseObject {
 
     this.add(this.xBox,this.zWedge,this.xWedge,this.sideWall1,this.sideWall2,this.sideWall3);
 
-    this.position.set(0,0,0);
-
     this.ballRadius = 1;
     const ballGeo = new THREE.SphereGeometry(this.ballRadius);
     this.ball = new MeshObject(ballGeo,sampleMC,"inclinedPlaneBall");
+
     this.ball.position.copy(this.sideWall1.position);
     this.ball.position.y += this.startHieght/2 + this.ballRadius;
     this.add(this.ball);
-    this.animationPhase = 1;
+    this.animationPhase = 0;
     this.ballSpeedVector = new THREE.Vector3(0,0,0);
+
+    this.collider = new THREE.Box3();
   }
   checkAnimationPhase() {
     if (this.animationPhase === 1 && (this.ball.position.x >= this.sideWall1.position.x + this.sideWallWidth/2)) {
@@ -98,13 +99,15 @@ export default class InclinedPlane extends BaseObject {
       this.ballSpeedVector.set(0,0,0);
       this.ball.position.z = this.sideWall3.position.z + (this.planeWidth / 2) + this.ballRadius * Math.sin(this.theta2);
       this.animationPhase = 6;
-    }
-    else if (this.animationPhase === 6 && this.ball.position.y <=  this.xBox.position.y - this.turnHeight / 2 + this.ballRadius) {
+    } else if (this.animationPhase === 6 && this.ball.position.y <=  this.xBox.position.y - this.turnHeight / 2 + this.ballRadius) {
       this.ballSpeedVector.set(0,0,this.ballSpeedVector.z);
       this.ball.position.z = this.zWedge.position.z + this.zSlantLen/2 + this.ballRadius;
       this.ball.position.y = this.xBox.position.y - this.turnHeight / 2 + this.ballRadius;
       this.animationPhase = 7;
     }
+  }
+  intesectsWith(other) {
+    return this.collider.intersectsBox(other.collider);
   }
   physics(dt) {
     this.checkAnimationPhase();
@@ -122,10 +125,15 @@ export default class InclinedPlane extends BaseObject {
     } else if (this.animationPhase === 6) {
       this.ballSpeedVector.z += 0.98 * dt * Math.cos(this.theta2);
       this.ballSpeedVector.y -= 0.98 * dt * Math.sin(this.theta2);
+    } else if (this.animationPhase === 8) {
+      this.ballSpeedVector.set(0,0,0);
     }
   }
+
   animate(dt) {
     this.ball.position.addScaledVector(this.ballSpeedVector,dt);
+    this.updateMatrixWorld(true);
+    this.collider.setFromObject(this.ball);
   }
 }
 

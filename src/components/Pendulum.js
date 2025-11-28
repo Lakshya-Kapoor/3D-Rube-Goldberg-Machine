@@ -11,7 +11,7 @@ export default class Pendulum extends BaseObject {
     const bob = { radius: 1 };
     const stand = {
       base: { width: 3, height: 0.3, depth: 3 },
-      verticalPole: { radius: 0.15, height: 10 },
+      verticalPole: { radius: 0.15, height: 15 },
       horizontalArm: { radius: 0.1, length: 2 },
     };
 
@@ -87,12 +87,18 @@ export default class Pendulum extends BaseObject {
     this.add(this.swingingPart);
 
     // physics state
-    this.angle = Math.PI / 4;
+    this.angle = -Math.PI / 2;
     this.gravity = 10;
     this.angularVelocity = 0;
     this.angularAcceleration = 0;
     this.decayFactor = 0.1;
     this.finished = false;
+
+    this.collider = new THREE.Box3();
+  }
+
+  intersectsWith(other) {
+    return this.collider.intersectsBox(other.collider);
   }
 
   physics(dt) {
@@ -118,5 +124,7 @@ export default class Pendulum extends BaseObject {
 
   animate(dt) {
     this.swingingPart.rotation.z = this.angle;
+    this.updateMatrixWorld(true);
+    this.collider.setFromObject(this.bobObj);
   }
 }

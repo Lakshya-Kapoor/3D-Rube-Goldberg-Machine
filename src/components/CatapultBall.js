@@ -4,10 +4,11 @@ import { MeshObject } from "./MeshObject.js";
 import { sampleMC } from "../utils/materialCoefficents.js";
 
 export default class CatapultBall extends BaseObject {
-  constructor(ballDim = { radius: 0.5 }) {
+  constructor(ballDim = { radius: 0.5 }, floorY = -100) {
     super();
 
     this.ballDim = ballDim;
+    this.floorY = floorY; // The y-level of the floor for collision
 
     const ballGeo = new THREE.SphereGeometry(ballDim.radius);
     this.ballObj = new MeshObject(ballGeo, sampleMC, "CatapultBall");
@@ -17,7 +18,7 @@ export default class CatapultBall extends BaseObject {
     this.launched = false;
 
     this.velocity = new THREE.Vector3(0, 0, 0);
-    this.gravity = -10;
+    this.gravity = -40;
     this.friction = 0.3;
     this.bounceDecay = 0.8;
 
@@ -26,7 +27,7 @@ export default class CatapultBall extends BaseObject {
   }
 
   // Launch the ball with initial velocities
-  launchBall(vx = -3, vy = 10) {
+  launchBall(vx = -70, vy = 50) {
     this.velocity.set(vx, vy, 0);
     this.translating = true;
     this.bouncing = true;
@@ -40,8 +41,10 @@ export default class CatapultBall extends BaseObject {
       this.velocity.y += this.gravity * dt;
       this.position.y += this.velocity.y * dt;
 
-      if (this.position.y < this.ballDim.radius) {
-        this.position.y = this.ballDim.radius;
+      // Use floorY instead of 0 for floor collision
+      const floorLevel = this.floorY + this.ballDim.radius;
+      if (this.position.y < floorLevel) {
+        this.position.y = floorLevel;
         this.velocity.y = -this.velocity.y * this.bounceDecay;
 
         if (Math.abs(this.velocity.y) < 0.1) {
