@@ -6,6 +6,7 @@ import { assetManager } from "./utils/assetManager.js";
 import Pendulum from "./objects/Pendulum.js";
 import Domino from "./objects/Domino.js";
 import SeeSaw from "./objects/SeeSaw.js";
+import CatapultBall from "./objects/CatapultBall.js";
 
 await setup();
 
@@ -37,9 +38,9 @@ const controls = new OrbitControls(camera, renderer.domElement);
 const axisHelper = new THREE.AxesHelper(5);
 scene.add(axisHelper);
 
-// // pendulum
-// const pendulum = new Pendulum();
-// scene.add(pendulum);
+// pendulum
+const pendulum = new Pendulum();
+scene.add(pendulum);
 
 // dominos
 const dominos = [];
@@ -54,8 +55,13 @@ dominos[0].tipOver();
 
 // see-saw
 const seeSaw = new SeeSaw();
-seeSaw.position.set(2, 0.5, dominos.length + 1);
 scene.add(seeSaw);
+seeSaw.position.set(2, 0.5, dominos.length + 1);
+
+// Catapult ball
+const catapultBall = new CatapultBall();
+catapultBall.position.set(4, 0.6, dominos.length + 1);
+scene.add(catapultBall);
 
 // Add lighting
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -78,9 +84,10 @@ const clock = new THREE.Clock();
 function animate() {
   const dt = clock.getDelta();
 
-  // pendulum.update(dt);
-  seeSaw.update(dt);
+  pendulum.update(dt);
   dominos.forEach((domino) => domino.update(dt));
+  seeSaw.update(dt);
+  catapultBall.update(dt);
 
   for (let i = 0; i < dominos.length - 1; i++) {
     if (dominos[i].falling && !dominos[i + 1].falling) {
@@ -94,6 +101,7 @@ function animate() {
   if (lastDomino.falling && !seeSaw.rotating) {
     if (lastDomino.intersectsWithSeeSaw(seeSaw)) {
       seeSaw.startRotation();
+      catapultBall.launchBall();
       lastDomino.constrainToSeeSaw(seeSaw);
     }
   }

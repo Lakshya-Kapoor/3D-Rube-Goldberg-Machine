@@ -17,11 +17,21 @@ export default class SeeSaw extends BaseObject {
     this.seeSawObj = new THREE.Mesh(seeSawGeo, seeSawMat);
     this.add(this.seeSawObj);
 
+    const seeSawRailGeo = new THREE.BoxGeometry(
+      seeSawDim.height,
+      seeSawDim.depth / 2,
+      seeSawDim.depth
+    );
+    this.seeSawRailObj = new THREE.Mesh(seeSawRailGeo, seeSawMat);
+    this.seeSawRailObj.position.x = seeSawDim.width / 2 - seeSawDim.height / 2;
+    this.seeSawRailObj.position.y = seeSawDim.depth / 4;
+    this.seeSawObj.add(this.seeSawRailObj);
+
     // physics state
     this.angle = -Math.PI / 15;
     this.targetAngle = -this.angle;
     this.angularVelocity = 0;
-    this.angularAcceleration = 3;
+    this.angularAcceleration = 5;
 
     this.rotating = false;
 
