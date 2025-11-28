@@ -4,6 +4,7 @@ import { setup } from "./app/setup.js";
 import { uvMap } from "./utils/uvMap.js";
 import { assetManager } from "./utils/assetManager.js";
 import Pendulum from "./objects/Pendulum.js";
+import Domino from "./objects/Domino.js";
 
 await setup();
 
@@ -21,7 +22,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(0, 0, 10);
+camera.position.set(-10, 5, 2);
 
 // Create renderer
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -38,6 +39,17 @@ scene.add(axisHelper);
 // pendulum
 const pendulum = new Pendulum();
 scene.add(pendulum);
+
+// domino
+/** @type {Domino[]} */
+const dominos = [];
+for (let i = 0; i < 5; i++) {
+  const domino = new Domino();
+  domino.position.set(0, 0, i);
+  scene.add(domino);
+  dominos.push(domino);
+}
+dominos[0].tipOver();
 
 // Add lighting
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -61,6 +73,16 @@ function animate() {
   const dt = clock.getDelta();
 
   pendulum.update(dt);
+  dominos.forEach((domino) => domino.update(dt));
+
+  for (let i = 0; i < dominos.length - 1; i++) {
+    if (dominos[i].falling && !dominos[i + 1].falling) {
+      if (dominos[i].intersectsWith(dominos[i + 1])) {
+        dominos[i + 1].tipOver();
+        dominos[i].constrainTo(dominos[i + 1]);
+      }
+    }
+  }
 
   controls.update();
   renderer.render(scene, camera);
