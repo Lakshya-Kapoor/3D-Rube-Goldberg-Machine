@@ -1,5 +1,7 @@
 import * as THREE from "three";
 import BaseObject from "./BaseObject.js";
+import { MeshObject } from "./MeshObject.js";
+import { sampleMC } from "../utils/materialCoefficents.js";
 
 export default class Pendulum extends BaseObject {
   constructor(stringDim = { length: 5, radius: 0.05 }, bob = { radius: 1 }) {
@@ -21,7 +23,7 @@ export default class Pendulum extends BaseObject {
 
     const bobGeo = new THREE.SphereGeometry(bob.radius);
     const bobMat = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-    this.bobObj = new THREE.Mesh(bobGeo, bobMat);
+    this.bobObj = new MeshObject(bobGeo, sampleMC, "PendulumBob");
 
     this.stringObj.position.y = -stringDim.length / 2;
     this.bobObj.position.y = -(stringDim.length + bob.radius);
