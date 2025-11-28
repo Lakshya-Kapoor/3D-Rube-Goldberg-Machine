@@ -5,6 +5,7 @@ import { uvMap } from "./utils/uvMap.js";
 import { assetManager } from "./utils/assetManager.js";
 import Pendulum from "./objects/Pendulum.js";
 import Domino from "./objects/Domino.js";
+import SeeSaw from "./objects/SeeSaw.js";
 
 await setup();
 
@@ -12,7 +13,7 @@ await setup();
 const canvas = document.getElementById("main-canvas");
 
 // Create scene
-const scene = new THREE.Scene();
+export const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1a1a2e);
 
 // Create camera
@@ -22,7 +23,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(-10, 5, 2);
+camera.position.set(-5, 5, 10);
 
 // Create renderer
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -36,12 +37,11 @@ const controls = new OrbitControls(camera, renderer.domElement);
 const axisHelper = new THREE.AxesHelper(5);
 scene.add(axisHelper);
 
-// pendulum
-const pendulum = new Pendulum();
-scene.add(pendulum);
+// // pendulum
+// const pendulum = new Pendulum();
+// scene.add(pendulum);
 
-// domino
-/** @type {Domino[]} */
+// dominos
 const dominos = [];
 for (let i = 0; i < 5; i++) {
   const domino = new Domino();
@@ -49,7 +49,13 @@ for (let i = 0; i < 5; i++) {
   scene.add(domino);
   dominos.push(domino);
 }
+const lastDomino = dominos[dominos.length - 1];
 dominos[0].tipOver();
+
+// see-saw
+const seeSaw = new SeeSaw();
+seeSaw.position.set(2, 0.5, dominos.length + 1);
+scene.add(seeSaw);
 
 // Add lighting
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -72,15 +78,23 @@ const clock = new THREE.Clock();
 function animate() {
   const dt = clock.getDelta();
 
-  pendulum.update(dt);
+  // pendulum.update(dt);
+  seeSaw.update(dt);
   dominos.forEach((domino) => domino.update(dt));
 
   for (let i = 0; i < dominos.length - 1; i++) {
     if (dominos[i].falling && !dominos[i + 1].falling) {
-      if (dominos[i].intersectsWith(dominos[i + 1])) {
+      if (dominos[i].intersectsWithDomino(dominos[i + 1])) {
         dominos[i + 1].tipOver();
-        dominos[i].constrainTo(dominos[i + 1]);
+        dominos[i].constrainToDomino(dominos[i + 1]);
       }
+    }
+  }
+
+  if (lastDomino.falling && !seeSaw.rotating) {
+    if (lastDomino.intersectsWithSeeSaw(seeSaw)) {
+      seeSaw.startRotation();
+      lastDomino.constrainToSeeSaw(seeSaw);
     }
   }
 

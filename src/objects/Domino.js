@@ -16,26 +16,46 @@ export default class Domino extends BaseObject {
     const dominoMat = new THREE.MeshStandardMaterial({ color: 0xffff55 });
     this.dominoObj = new THREE.Mesh(dominoGeo, dominoMat);
     this.dominoObj.position.y = dominoDim.height / 2;
+    this.dominoObj.position.z = -dominoDim.depth / 2;
     this.add(this.dominoObj);
 
-    // --- physics state ---
+    // Small collision point at the top of the domino for seesaw collision
+    const tipGeo = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+    const tipMat = new THREE.MeshBasicMaterial({ visible: false });
+    this.tipObj = new THREE.Mesh(tipGeo, tipMat);
+    this.tipObj.position.y = dominoDim.height;
+    this.tipObj.position.z = -dominoDim.depth / 2;
+    this.add(this.tipObj);
+
+    // physics state
     this.angle = Math.PI / 2;
     this.angularVelocity = 0;
-    this.angularAcceleration = 5;
+    this.angularAcceleration = 3;
     this.minAngle = 0;
+
     this.falling = false;
-    this.constrainedTo = null;
+    this.constrainedToDomino = null;
+    this.constrainedToSeeSaw = null;
     this.offset = 0.1;
 
     this.collider = new THREE.Box3();
+    this.tipCollider = new THREE.Box3();
   }
 
-  intersectsWith(domino) {
-    return this.collider.intersectsBox(domino.collider);
+  intersectsWithDomino(object) {
+    return this.collider.intersectsBox(object.collider);
   }
 
-  constrainTo(domino) {
-    this.constrainedTo = domino;
+  intersectsWithSeeSaw(seeSaw) {
+    return this.tipCollider.intersectsBox(seeSaw.collider);
+  }
+
+  constrainToDomino(domino) {
+    this.constrainedToDomino = domino;
+  }
+
+  constrainToSeeSaw(seeSaw) {
+    this.constrainedToSeeSaw = seeSaw;
   }
 
   // call this to start falling
@@ -46,11 +66,8 @@ export default class Domino extends BaseObject {
   physics(dt) {
     if (!this.falling) return;
 
-    if (this.constrainedTo == null) {
-      // integrate velocity
+    if (this.constrainedToDomino == null && this.constrainedToSeeSaw == null) {
       this.angularVelocity += this.angularAcceleration * dt;
-
-      // integrate angle
       this.angle -= this.angularVelocity * dt;
 
       // clamp at max rotation
@@ -59,12 +76,26 @@ export default class Domino extends BaseObject {
         this.angularVelocity = 0;
         this.falling = false;
       }
-    } else {
-      const phi = this.constrainedTo.angle;
+    } else if (this.constrainedToDomino != null) {
+      const phi = this.constrainedToDomino.angle;
       this.angle =
         phi -
         Math.asin((1 / this.dominoDim.height) * Math.sin(Math.PI - phi)) +
         this.offset;
+    } else if (this.constrainedToSeeSaw != null) {
+      if (this.initialConstraintAngle === undefined) {
+        this.initialConstraintAngle = this.angle;
+        this.initialSeeSawAngle = this.constrainedToSeeSaw.angle;
+      }
+
+      const seeSawDelta =
+        this.constrainedToSeeSaw.angle - this.initialSeeSawAngle;
+      this.angle = this.initialConstraintAngle - seeSawDelta;
+
+      // Clamp to min angle
+      if (this.angle <= this.minAngle) {
+        this.angle = this.minAngle;
+      }
     }
   }
 
@@ -72,5 +103,6 @@ export default class Domino extends BaseObject {
     this.rotation.x = Math.PI / 2 - this.angle;
     this.updateMatrixWorld(true);
     this.collider.setFromObject(this.dominoObj);
+    this.tipCollider.setFromObject(this.tipObj);
   }
 }
