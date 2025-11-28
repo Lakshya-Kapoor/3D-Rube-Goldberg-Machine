@@ -1,30 +1,31 @@
 import * as THREE from "three";
 import BaseObject from "./BaseObject.js";
+import { MeshObject } from "./MeshObject.js";
+import { sampleMC } from "../utils/materialCoefficents.js";
 
 export default class Domino extends BaseObject {
-  constructor(dominoDim = { width: 1, height: 2, depth: 0.25 }) {
+  constructor() {
     super();
 
+    this.dominoDim = { width: 1, height: 2, depth: 0.25 };
+
     const dominoGeo = new THREE.BoxGeometry(
-      dominoDim.width,
-      dominoDim.height,
-      dominoDim.depth
+      this.dominoDim.width,
+      this.dominoDim.height,
+      this.dominoDim.depth
     );
 
-    this.dominoDim = dominoDim;
-
-    const dominoMat = new THREE.MeshStandardMaterial({ color: 0xffff55 });
-    this.dominoObj = new THREE.Mesh(dominoGeo, dominoMat);
-    this.dominoObj.position.y = dominoDim.height / 2;
-    this.dominoObj.position.z = -dominoDim.depth / 2;
+    this.dominoObj = new MeshObject(dominoGeo, sampleMC, "Domino");
+    this.dominoObj.position.y = this.dominoDim.height / 2;
+    this.dominoObj.position.z = -this.dominoDim.depth / 2;
     this.add(this.dominoObj);
 
     // Small collision point at the top of the domino for seesaw collision
     const tipGeo = new THREE.BoxGeometry(0.1, 0.1, 0.1);
     const tipMat = new THREE.MeshBasicMaterial({ visible: false });
     this.tipObj = new THREE.Mesh(tipGeo, tipMat);
-    this.tipObj.position.y = dominoDim.height;
-    this.tipObj.position.z = -dominoDim.depth / 2;
+    this.tipObj.position.y = this.dominoDim.height;
+    this.tipObj.position.z = -this.dominoDim.depth / 2;
     this.add(this.tipObj);
 
     // physics state

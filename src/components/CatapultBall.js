@@ -1,5 +1,7 @@
 import * as THREE from "three";
 import BaseObject from "./BaseObject.js";
+import { MeshObject } from "./MeshObject.js";
+import { sampleMC } from "../utils/materialCoefficents.js";
 
 export default class CatapultBall extends BaseObject {
   constructor(ballDim = { radius: 0.5 }) {
@@ -8,11 +10,10 @@ export default class CatapultBall extends BaseObject {
     this.ballDim = ballDim;
 
     const ballGeo = new THREE.SphereGeometry(ballDim.radius);
-    const ballMat = new THREE.MeshStandardMaterial({ color: 0xff5555 });
-    this.ballObj = new THREE.Mesh(ballGeo, ballMat);
+    this.ballObj = new MeshObject(ballGeo, sampleMC, "CatapultBall");
     this.add(this.ballObj);
 
-    // --- physics state ---
+    // physics state
     this.launched = false;
 
     this.velocity = new THREE.Vector3(0, 0, 0);
