@@ -9,7 +9,11 @@ import { wallMC } from "./utils/materialCoefficents.js";
 import SeeSaw from "./components/SeeSaw.js";
 import Domino from "./components/Domino.js";
 import CatapultBall from "./components/CatapultBall.js";
-import { placeBottomAt,placeLeftAt,placeNearAt } from "./utils/placeHelper.js";
+import {
+  placeBottomAt,
+  placeLeftAt,
+  placeNearAt,
+} from "./utils/placeHelper.js";
 import { globalUniforms } from "./app/setup.js";
 
 await setup();
@@ -22,16 +26,15 @@ function roomInit() {
   return roomObj;
 }
 
-
-function spotLightTrackObj (obj) {
+function spotLightTrackObj(obj) {
   const movingSpotLightIdx = 2;
   const focusOffset = new THREE.Vector3(0, 100, 0);
-  globalUniforms.lights.value[movingSpotLightIdx].position.copy(obj.getFocusPoint().add(focusOffset));
+  globalUniforms.lights.value[movingSpotLightIdx].position.copy(
+    obj.getFocusPoint().add(focusOffset)
+  );
 }
 
-const { scene, camera, renderer, controls } = app;
-
-
+const { scene, cameraController, renderer, controls } = app;
 
 const room = roomInit();
 scene.add(room);
@@ -42,7 +45,6 @@ placeBottomAt(pendulum, -100);
 placeLeftAt(pendulum, -150);
 placeNearAt(pendulum, -250);
 room.add(pendulum);
-
 
 const inclinedPlane = new InclinedPlane();
 inclinedPlane.scale.multiplyScalar(7);

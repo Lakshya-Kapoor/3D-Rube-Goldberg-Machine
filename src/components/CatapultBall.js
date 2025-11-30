@@ -22,7 +22,7 @@ export default class CatapultBall extends BaseObject {
 
     this.velocity = new THREE.Vector3(0, 0, 0);
     this.gravity = -100;
-    this.friction = 1.8;
+    this.friction = 3.5;
     this.bounceDecay = 0.8;
 
     this.bouncing = false;
@@ -30,7 +30,7 @@ export default class CatapultBall extends BaseObject {
   }
 
   // Launch the ball with initial velocities
-  launchBall(vx = -50, vy = 100) {
+  launchBall(vx = -70, vy = 100) {
     this.velocity.set(vx, vy, 0);
     this.translating = true;
     this.bouncing = true;
@@ -92,6 +92,9 @@ export default class CatapultBall extends BaseObject {
         this.velocity.x = -this.velocity.x * this.bounceDecay;
       }
     }
+
+    // Rotation based on horizontal movement
+    this.ballObj.rotation.z -= (this.velocity.x * dt) / worldRadius;
   }
 
   animate(dt) {}

@@ -63,7 +63,7 @@ export async function setup() {
     assetManager.texture.ball3,
     assetManager.texture.prism,
   ];
-  
+
   globalUniforms.lights.value = [
     cloneLightCoefficients(pointLight1LC),
     cloneLightCoefficients(spotLight1LC),
