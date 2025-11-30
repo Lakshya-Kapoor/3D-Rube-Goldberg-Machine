@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import BaseObject from "./BaseObject.js";
 import { MeshObject } from "./MeshObject.js";
-import { sampleMC } from "../utils/materialCoefficents.js";
+import { sampleMC,dominoMC } from "../utils/materialCoefficents.js";
 
 export default class Domino extends BaseObject {
   constructor() {
@@ -15,7 +15,7 @@ export default class Domino extends BaseObject {
       this.dominoDim.depth
     );
 
-    this.dominoObj = new MeshObject(dominoGeo, sampleMC, "Domino");
+    this.dominoObj = new MeshObject(dominoGeo, dominoMC, "Domino");
     this.dominoObj.position.y = this.dominoDim.height / 2;
     this.dominoObj.position.z = -this.dominoDim.depth / 2;
     this.add(this.dominoObj);

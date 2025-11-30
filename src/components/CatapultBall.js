@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import BaseObject from "./BaseObject.js";
 import { MeshObject } from "./MeshObject.js";
-import { sampleMC } from "../utils/materialCoefficents.js";
+import { ball3MC, sampleMC } from "../utils/materialCoefficents.js";
 
 export default class CatapultBall extends BaseObject {
   constructor(ballDim = { radius: 0.5 }, floorY = -100) {
@@ -11,7 +11,7 @@ export default class CatapultBall extends BaseObject {
     this.floorY = floorY; // The y-level of the floor for collision
 
     const ballGeo = new THREE.SphereGeometry(ballDim.radius);
-    this.ballObj = new MeshObject(ballGeo, sampleMC, "CatapultBall");
+    this.ballObj = new MeshObject(ballGeo, ball3MC, "CatapultBall");
     this.add(this.ballObj);
 
     // physics state

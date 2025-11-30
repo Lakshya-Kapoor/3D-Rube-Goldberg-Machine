@@ -9,7 +9,7 @@ export const sampleMC = {
   textureIndex: { value: 0 },
 };
 
-export const teapotMC = {
+export const wallMC = {
   ka: { value: new THREE.Vector3(0.2, 0.2, 0.2) },
   kd: { value: new THREE.Vector3(0.7, 0.7, 0.7) },
   ks: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
@@ -18,7 +18,7 @@ export const teapotMC = {
   textureIndex: { value: 0 },
 };
 
-export const dragonMC = {
+export const pendulumMC = {
   ka: { value: new THREE.Vector3(0.2, 0.2, 0.2) },
   kd: { value: new THREE.Vector3(0.7, 0.7, 0.7) },
   ks: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
@@ -27,7 +27,7 @@ export const dragonMC = {
   textureIndex: { value: 1 },
 };
 
-export const bunnyMC = {
+export const ball1MC = {
   ka: { value: new THREE.Vector3(0.2, 0.2, 0.2) },
   kd: { value: new THREE.Vector3(0.7, 0.7, 0.7) },
   ks: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
@@ -36,38 +36,56 @@ export const bunnyMC = {
   textureIndex: { value: 2 },
 };
 
-export const roomMC = {
+export const inclinedPlaneMC = {
   ka: { value: new THREE.Vector3(0.2, 0.2, 0.2) },
   kd: { value: new THREE.Vector3(0.7, 0.7, 0.7) },
   ks: { value: new THREE.Vector3(0.5, 0.5, 0.5) },
   shininess: { value: 32.0 },
   useTexture: { value: 1 },
-  textureIndex: { value: 2 },
+  textureIndex: { value: 4 },
 };
 
-export const standMC = {
+export const ball2MC = {
   ka: { value: new THREE.Vector3(0.2, 0.2, 0.2) },
   kd: { value: new THREE.Vector3(0.7, 0.7, 0.7) },
   ks: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
   shininess: { value: 4.0 },
   useTexture: { value: 1 },
-  textureIndex: { value: 1 },
+  textureIndex: { value: 3 },
 };
 
-export const cubeMC = {
+export const dominoMC = {
   ka: { value: new THREE.Vector3(0.2, 0.2, 0.2) },
   kd: { value: new THREE.Vector3(0.7, 0.7, 0.7) },
   ks: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
   shininess: { value: 32.0 },
-  useTexture: { value: 0 },
-  textureIndex: { value: 0 },
+  useTexture: { value: 1 },
+  textureIndex: { value: 5 },
 };
 
-export const lightMC = {
+export const seesawMC = {
   ka: { value: new THREE.Vector3(0.5, 0.5, 0.5) },
   kd: { value: new THREE.Vector3(0.0, 0.0, 0.0) },
   ks: { value: new THREE.Vector3(0.0, 0.0, 0.0) },
   shininess: { value: 32.0 },
-  useTexture: { value: 0 },
-  textureIndex: { value: 0 },
+  useTexture: { value: 1 },
+  textureIndex: { value: 6 },
+};
+
+export const ball3MC = {
+  ka: { value: new THREE.Vector3(0.2, 0.2, 0.2) },
+  kd: { value: new THREE.Vector3(0.7, 0.7, 0.7) },
+  ks: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
+  shininess: { value: 16.0 },
+  useTexture: { value: 1 },
+  textureIndex: { value: 7 },
+};
+
+export const prismMC = {
+  ka: { value: new THREE.Vector3(0.2, 0.2, 0.2) },
+  kd: { value: new THREE.Vector3(0.7, 0.7, 0.7) },
+  ks: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
+  shininess: { value: 16.0 },
+  useTexture: { value: 1 },
+  textureIndex: { value: 8 },
 };

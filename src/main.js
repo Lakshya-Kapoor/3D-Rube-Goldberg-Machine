@@ -4,18 +4,25 @@ import Pendulum from "./components/Pendulum.js";
 
 import InclinedPlane from "./components/inclinedPlane.js";
 import { MeshObject } from "./components/MeshObject.js";
-import { roomMC } from "./utils/materialCoefficents.js";
+import { wallMC } from "./utils/materialCoefficents.js";
 import SeeSaw from "./components/SeeSaw.js";
 import Domino from "./components/Domino.js";
 import CatapultBall from "./components/CatapultBall.js";
 import { placeBottomAt,placeLeftAt,placeNearAt } from "./utils/placeHelper.js";
+import { globalUniforms } from "./app/setup.js";
 
 await setup();
 function roomInit() {
   const roomGeometry = new THREE.BoxGeometry(2, 2, 2);
   roomGeometry.scale(-200, 100, 250);
-  const roomObj = new MeshObject(roomGeometry, roomMC, "room");
+  const roomObj = new MeshObject(roomGeometry, wallMC, "room");
   return roomObj;
+}
+
+function spotLightTrackObj (obj) {
+  const movingSpotLightIdx = 2;
+  const focusOffset = new THREE.Vector3(0, 100, 0);
+  globalUniforms.lights.value[movingSpotLightIdx].position.copy(obj.getFocusPoint().add(focusOffset));
 }
 
 const { scene, camera, renderer, controls } = app;
@@ -79,6 +86,7 @@ placeLeftAt(catapultBall, 165);
 
 
 const clock = new THREE.Clock();
+let trackObj = seeSaw;
 
 function animate() {
   const dt = clock.getDelta();
@@ -115,6 +123,7 @@ function animate() {
   }
 
   controls.update();
+  spotLightTrackObj(trackObj);
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 }

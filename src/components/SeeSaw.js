@@ -2,7 +2,7 @@ import * as THREE from "three";
 import BaseObject from "./BaseObject.js";
 import { MeshObject } from "./MeshObject.js";
 import { assetManager } from "../utils/assetManager.js";
-import { sampleMC } from "../utils/materialCoefficents.js";
+import { prismMC, sampleMC, seesawMC } from "../utils/materialCoefficents.js";
 
 export default class SeeSaw extends BaseObject {
   constructor() {
@@ -16,7 +16,7 @@ export default class SeeSaw extends BaseObject {
     // STATIC PART
     this.wedge = new MeshObject(
       assetManager.geometry.prism,
-      sampleMC,
+      prismMC,
       "SeeSawWedge"
     );
     this.wedge.scale.set(
@@ -35,7 +35,7 @@ export default class SeeSaw extends BaseObject {
       this.seeSawDim.plank.height,
       this.seeSawDim.plank.depth
     );
-    this.plankObj = new MeshObject(plankGeo, sampleMC, "SeeSawPlank");
+    this.plankObj = new MeshObject(plankGeo, seesawMC, "SeeSawPlank");
     this.seeSawPart.add(this.plankObj);
     this.plankObj.position.y = this.seeSawDim.wedge.height * 1.5;
 
@@ -44,7 +44,7 @@ export default class SeeSaw extends BaseObject {
       this.seeSawDim.plank.depth / 2,
       this.seeSawDim.plank.depth
     );
-    this.seeSawRailObj = new MeshObject(seeSawRailGeo, sampleMC, "SeeSawRail");
+    this.seeSawRailObj = new MeshObject(seeSawRailGeo, seesawMC, "SeeSawRail");
     this.plankObj.add(this.seeSawRailObj);
     this.seeSawRailObj.position.x =
       this.seeSawDim.plank.width / 2 - this.seeSawDim.plank.height / 2;
@@ -61,6 +61,8 @@ export default class SeeSaw extends BaseObject {
     this.rotating = false;
 
     this.collider = new THREE.Box3();
+    this._focusLocal = new THREE.Vector3();
+    this._focusWorld = new THREE.Vector3();
   }
 
   startRotation() {
@@ -91,5 +93,27 @@ export default class SeeSaw extends BaseObject {
 
     this.updateMatrixWorld(true);
     this.collider.setFromObject(this.seeSawPart);
+  }
+
+  getFocusPoint () {
+    // Calculate progress from 0 (initial angle) to 1 (target angle)
+    const totalRotation = this.targetAngle - (-Math.PI / 12); // initial angle is -PI/12
+    const currentProgress = (this.angle - (-Math.PI / 12)) / totalRotation;
+    const t = THREE.MathUtils.clamp(currentProgress, 0, 1);
+
+    // Interpolate x from left edge to right edge of the plank
+    const leftX = -this.seeSawDim.plank.width / 2;
+    const rightX = this.seeSawDim.plank.width / 2;
+    const localX = THREE.MathUtils.lerp(leftX, rightX, t);
+
+    // Set local position on the plank surface
+    this._focusLocal.set(localX, this.seeSawDim.plank.height / 2, 0);
+
+    // Convert to world coordinates via the plank
+    this.plankObj.updateMatrixWorld(true);
+    this._focusWorld.copy(this._focusLocal);
+    this.plankObj.localToWorld(this._focusWorld);
+
+    return this._focusWorld;
   }
 }

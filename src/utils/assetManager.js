@@ -8,7 +8,7 @@ class AssetManager {
   constructor() {
 
     this._model_names = ["wedge","prism"];
-    this._texture_names = ["stand", "wood", "marble2"];
+    this._texture_names = ["wall", "pendulum", "ball1","ball2","inclinedPlane","domino","seesaw","ball3","prism"];
 
     this.geometry = {};
     this.texture = {};

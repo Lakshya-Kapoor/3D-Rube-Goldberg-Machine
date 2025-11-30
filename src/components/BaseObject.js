@@ -5,6 +5,7 @@ export default class BaseObject extends THREE.Object3D {
     super();
   }
 
+  getFocusPoint() {}
   physics(dt) {}
   animate(dt) {}
 

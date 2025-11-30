@@ -41,7 +41,7 @@ export const spotLight1LC = {
   kc: 0.9,
   kl: 0,
   kq: 0,
-  on: true,
+  on: false,
   spotLight: true,
   direction: new THREE.Vector3(0, -1, 0),
   cutoff: Math.cos(10 * (Math.PI / 180)), // 12.5 degrees in radians

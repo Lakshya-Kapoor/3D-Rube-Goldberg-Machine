@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import BaseObject from "./BaseObject.js";
 import { MeshObject } from "./MeshObject.js";
-import { sampleMC } from "../utils/materialCoefficents.js";
-
+import { ball1MC, sampleMC } from "../utils/materialCoefficents.js";
+import { pendulumMC } from "../utils/materialCoefficents.js";
 export default class Pendulum extends BaseObject {
   constructor() {
     super();
@@ -21,9 +21,10 @@ export default class Pendulum extends BaseObject {
     const baseGeo = new THREE.BoxGeometry(
       stand.base.width,
       stand.base.height,
-      stand.base.depth
+      stand.base.depth,
+      4,4,4
     );
-    this.base = new MeshObject(baseGeo, sampleMC, "PendulumBase");
+    this.base = new MeshObject(baseGeo, pendulumMC, "PendulumBase");
     this.base.position.y = stand.base.height / 2;
 
     const verticalPoleGeo = new THREE.CylinderGeometry(
@@ -33,7 +34,7 @@ export default class Pendulum extends BaseObject {
     );
     this.verticalPole = new MeshObject(
       verticalPoleGeo,
-      sampleMC,
+      pendulumMC,
       "PendulumVerticalPole"
     );
     this.verticalPole.position.y =
@@ -46,7 +47,7 @@ export default class Pendulum extends BaseObject {
     );
     this.horizontalArm = new MeshObject(
       horizontalArmGeo,
-      sampleMC,
+      pendulumMC,
       "PendulumHorizontalArm"
     );
     this.horizontalArm.rotation.x = Math.PI / 2;
@@ -66,10 +67,10 @@ export default class Pendulum extends BaseObject {
       stringDim.radius,
       stringDim.length
     );
-    this.stringObj = new MeshObject(stringGeo, sampleMC, "PendulumString");
+    this.stringObj = new MeshObject(stringGeo, pendulumMC, "PendulumString");
 
     const bobGeo = new THREE.SphereGeometry(bob.radius);
-    this.bobObj = new MeshObject(bobGeo, sampleMC, "PendulumBob");
+    this.bobObj = new MeshObject(bobGeo, ball1MC, "PendulumBob");
 
     this.stringObj.position.y = -stringDim.length / 2;
     this.bobObj.position.y = -(stringDim.length + bob.radius);

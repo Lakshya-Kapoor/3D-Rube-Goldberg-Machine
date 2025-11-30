@@ -52,11 +52,17 @@ export async function setup() {
 
   // Populate the textures array - indices match textureIndex in materialCoefficents
   globalUniforms.textures.value = [
-    assetManager.texture.stand,
-    assetManager.texture.wood,
-    assetManager.texture.marble2,
-    // assetManager.texture.viensMarble,
+    assetManager.texture.wall,
+    assetManager.texture.pendulum,
+    assetManager.texture.ball1,
+    assetManager.texture.ball2,
+    assetManager.texture.inclinedPlane,
+    assetManager.texture.domino,
+    assetManager.texture.seesaw,
+    assetManager.texture.ball3,
+    assetManager.texture.prism,
   ];
+  
   globalUniforms.lights.value = [
     cloneLightCoefficients(pointLight1LC),
     cloneLightCoefficients(spotLight1LC),

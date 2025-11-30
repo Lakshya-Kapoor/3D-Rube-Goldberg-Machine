@@ -1,7 +1,7 @@
 export const FRAGMENT_SHADER = `
 
 uniform bool usePhong;
-uniform sampler2D textures[5];
+uniform sampler2D textures[9];
 uniform int numLights;
 uniform vec3 ka;
 uniform vec3 kd;
@@ -47,6 +47,11 @@ void main() {
         else if (texIdx == 2) texColor = texture2D(textures[2], vUv).rgb;
         else if (texIdx == 3) texColor = texture2D(textures[3], vUv).rgb;
         else if (texIdx == 4) texColor = texture2D(textures[4], vUv).rgb;
+        else if (texIdx == 5) texColor = texture2D(textures[5], vUv).rgb;
+        else if (texIdx == 6) texColor = texture2D(textures[6], vUv).rgb;
+        else if (texIdx == 7) texColor = texture2D(textures[7], vUv).rgb;
+        else if (texIdx == 8) texColor = texture2D(textures[8], vUv).rgb;
+
     }
 
     if (!usePhong) {
