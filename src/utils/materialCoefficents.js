@@ -10,7 +10,7 @@ export const sampleMC = {
 };
 
 export const wallMC = {
-  ka: { value: new THREE.Vector3(0.6, 0.6, 0.6) },
+  ka: { value: new THREE.Vector3(0.3, 0.3, 0.3) },
   kd: { value: new THREE.Vector3(0.8, 0.8, 0.8) },
   ks: { value: new THREE.Vector3(0.7, 0.7, 0.7) },
   shininess: { value: 100.0 },
@@ -37,8 +37,8 @@ export const ball1MC = {
 };
 
 export const inclinedPlaneMC = {
-  ka: { value: new THREE.Vector3(0.6, 0.6, 0.6) },
-  kd: { value: new THREE.Vector3(0.8, 0.8, 0.8) },
+  ka: { value: new THREE.Vector3(0.2, 0.2, 0.2) },
+  kd: { value: new THREE.Vector3(0.6, 0.6, 0.6) },
   ks: { value: new THREE.Vector3(0.5, 0.5, 0.5) },
   shininess: { value: 32.0 },
   useTexture: { value: 1 },
@@ -55,8 +55,8 @@ export const ball2MC = {
 };
 
 export const dominoMC = {
-  ka: { value: new THREE.Vector3(0.2, 0.2, 0.2) },
-  kd: { value: new THREE.Vector3(0.7, 0.7, 0.7) },
+  ka: { value: new THREE.Vector3(0.6, 0.6, 0.6) },
+  kd: { value: new THREE.Vector3(0.8, 0.8, 0.8) },
   ks: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
   shininess: { value: 32.0 },
   useTexture: { value: 1 },
@@ -76,7 +76,7 @@ export const ball3MC = {
   ka: { value: new THREE.Vector3(0.6, 0.6, 0.6) },
   kd: { value: new THREE.Vector3(0.8, 0.8, 0.8) },
   ks: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
-  shininess: { value: 16.0 },
+  shininess: { value: 32.0 },
   useTexture: { value: 1 },
   textureIndex: { value: 7 },
 };
