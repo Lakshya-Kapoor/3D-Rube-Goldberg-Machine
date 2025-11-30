@@ -41,16 +41,6 @@ export async function setup() {
   app.renderer.setSize(window.innerWidth, window.innerHeight);
   app.renderer.setPixelRatio(window.devicePixelRatio);
 
-  // Add axis helper
-  const axisHelper = new THREE.AxesHelper(5);
-  app.scene.add(axisHelper);
-
-  window.addEventListener("resize", () => {
-    app.camera.aspect = window.innerWidth / window.innerHeight;
-    app.camera.updateProjectionMatrix();
-    app.renderer.setSize(window.innerWidth, window.innerHeight);
-  });
-
   // Populate the textures array - indices match textureIndex in materialCoefficents
   globalUniforms.textures.value = [
     assetManager.texture.wall,
@@ -63,7 +53,7 @@ export async function setup() {
     assetManager.texture.ball3,
     assetManager.texture.prism,
   ];
-  
+
   globalUniforms.lights.value = [
     cloneLightCoefficients(pointLight1LC),
     cloneLightCoefficients(spotLight1LC),
@@ -72,16 +62,9 @@ export async function setup() {
   globalUniforms.numLights.value = 3;
   globalUniforms.usePhong.value = 1;
 
-  // const grid = new THREE.GridHelper(400, 400);
-  // app.scene.add(grid);
-  // app.scene.add(new THREE.AxesHelper(300));
-
   app.controls = new OrbitControls(app.camera, app.renderer.domElement);
   app.controls.minDistance = 1;
   app.controls.maxDistance = 100;
 
   app.cameraController = new CameraController(app.camera, app.controls);
-
-  // const vertexNormalHelper = new VertexNormalsHelper(cubeObj, 5, 0x00ff00);
-  // app.scene.add(vertexNormalHelper);
 }

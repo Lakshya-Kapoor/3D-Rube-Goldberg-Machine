@@ -33,7 +33,7 @@ export const pointLight1LC = {
 };
 
 export const spotLight1LC = {
-  position: new THREE.Vector3(0, 200, -100),
+  position: new THREE.Vector3(-25, 200, -25),
   Ia: new THREE.Vector3(0.3, 0.25, 0.1),
   Id: new THREE.Vector3(1.0, 0.9, 0.2),
   Is: new THREE.Vector3(1.0, 0.95, 0.4),

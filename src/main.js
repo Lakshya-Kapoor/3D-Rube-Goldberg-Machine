@@ -9,7 +9,11 @@ import { wallMC } from "./utils/materialCoefficents.js";
 import SeeSaw from "./components/SeeSaw.js";
 import Domino from "./components/Domino.js";
 import CatapultBall from "./components/CatapultBall.js";
-import { placeBottomAt,placeLeftAt,placeNearAt } from "./utils/placeHelper.js";
+import {
+  placeBottomAt,
+  placeLeftAt,
+  placeNearAt,
+} from "./utils/placeHelper.js";
 import { globalUniforms } from "./app/setup.js";
 
 await setup();
@@ -22,25 +26,16 @@ function roomInit() {
   return roomObj;
 }
 
-
-function spotLightTrackObj (obj) {
+function spotLightTrackObj(obj) {
   const movingSpotLightIdx = 2;
   const focusOffset = 100;
   let trackPosition = obj.getFocusPoint().clone();
   trackPosition.y = focusOffset;
   globalUniforms.lights.value[movingSpotLightIdx].position.copy(trackPosition);
-
-  // const position = cameraController.camera.position.clone();
-  // globalUniforms.lights.value[movingSpotLightIdx].position.copy(position);
-  
-  // // Calculate direction from spotlight to the focus point (same as camera look-at)
-  // const direction = cameraController.targetLookAt.clone().sub(position).normalize();
-  // globalUniforms.lights.value[movingSpotLightIdx].direction.copy(direction);
 }
 
-const { scene, camera, renderer, controls,cameraController } = app;
+const { scene, camera, renderer, controls, cameraController } = app;
 cameraController.toggleFollowMode();
-
 
 const room = roomInit();
 scene.add(room);
@@ -51,7 +46,6 @@ placeBottomAt(pendulum, -100);
 placeLeftAt(pendulum, -150);
 placeNearAt(pendulum, -250);
 room.add(pendulum);
-
 
 const inclinedPlane = new InclinedPlane();
 inclinedPlane.scale.multiplyScalar(7);
