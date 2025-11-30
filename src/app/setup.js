@@ -7,6 +7,7 @@ import {
   spotLight2LC,
   cloneLightCoefficients,
 } from "../utils/lightCoefficents.js";
+import { CameraController } from "./CameraController.js";
 
 export const globalUniforms = {
   lights: { value: [] },
@@ -20,6 +21,7 @@ export const app = {
   camera: null,
   renderer: null,
   controls: null,
+  cameraController: null,
 };
 
 export async function setup() {
@@ -33,8 +35,7 @@ export async function setup() {
     0.1,
     1000
   );
-
-  app.camera.position.set(-5, 5, 10);
+  app.camera.position.set(-2000, 1000, 2000);
 
   app.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   app.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -72,6 +73,8 @@ export async function setup() {
   app.controls = new OrbitControls(app.camera, app.renderer.domElement);
   app.controls.minDistance = 1;
   app.controls.maxDistance = 100;
+
+  app.cameraController = new CameraController(app.camera, app.controls);
 
   // const vertexNormalHelper = new VertexNormalsHelper(cubeObj, 5, 0x00ff00);
   // app.scene.add(vertexNormalHelper);

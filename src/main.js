@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { setup, app } from "./app/setup.js";
+import { initEventListeners } from "./app/eventListeners.js";
 import Pendulum from "./components/Pendulum.js";
 
 import InclinedPlane from "./components/inclinedPlane.js";
@@ -8,9 +9,15 @@ import { roomMC } from "./utils/materialCoefficents.js";
 import SeeSaw from "./components/SeeSaw.js";
 import Domino from "./components/Domino.js";
 import CatapultBall from "./components/CatapultBall.js";
-import { placeBottomAt,placeLeftAt,placeNearAt } from "./utils/placeHelper.js";
+import {
+  placeBottomAt,
+  placeLeftAt,
+  placeNearAt,
+} from "./utils/placeHelper.js";
 
 await setup();
+initEventListeners();
+
 function roomInit() {
   const roomGeometry = new THREE.BoxGeometry(2, 2, 2);
   roomGeometry.scale(-200, 100, 250);
@@ -18,8 +25,7 @@ function roomInit() {
   return roomObj;
 }
 
-const { scene, camera, renderer, controls } = app;
-controls.zoomSpeed = 4.0;
+const { scene, cameraController, renderer, controls } = app;
 
 const room = roomInit();
 scene.add(room);
@@ -31,17 +37,8 @@ placeLeftAt(pendulum, -150);
 placeNearAt(pendulum, -250);
 room.add(pendulum);
 
-const viewDistance = 150; // adjust to frame the swing
-camera.position.set(
-  pendulum.position.x,
-  pendulum.position.y + 20,
-  pendulum.position.z + viewDistance
-);
-
-
 // controls.target.copy(pendulum.position);
 // camera.lookAt(pendulum.position);
-
 
 const inclinedPlane = new InclinedPlane();
 inclinedPlane.scale.multiplyScalar(7);
@@ -50,9 +47,8 @@ placeLeftAt(inclinedPlane, -77);
 placeNearAt(inclinedPlane, -250);
 room.add(inclinedPlane);
 
-
 const dominos = [];
-for (let i = 0; i < 3; i++) {
+for (let i = 0; i < 10; i++) {
   const domino = new Domino();
   domino.scale.multiplyScalar(20);
   domino.position.set(0, 0, -75 + i * 20);
@@ -66,7 +62,7 @@ const lastDomino = dominos[dominos.length - 1];
 const seeSaw = new SeeSaw();
 seeSaw.scale.multiplyScalar(20);
 scene.add(seeSaw);
-seeSaw.position.set(0,0,-75 + (dominos.length +1) * 20);
+seeSaw.position.set(0, 0, -75 + (dominos.length + 1) * 20);
 placeBottomAt(seeSaw, -100);
 placeLeftAt(seeSaw, 84);
 
@@ -77,45 +73,52 @@ catapultBall.position.set(0, 0, -75 + (dominos.length + 1) * 20);
 placeBottomAt(catapultBall, -100 + 5);
 placeLeftAt(catapultBall, 165);
 
-
 const clock = new THREE.Clock();
 
+let trackObj = pendulum;
 function animate() {
   const dt = clock.getDelta();
 
-
   pendulum.update(dt);
   inclinedPlane.update(dt);
+  dominos.forEach((domino) => domino.update(dt));
   seeSaw.update(dt);
   catapultBall.update(dt);
-  dominos.forEach((domino) => domino.update(dt));
-  
+
+  if (pendulum.intersectsWith(inclinedPlane)) {
+    inclinedPlane.animationPhase = 1;
+    trackObj = inclinedPlane;
+  }
+
+  if (inclinedPlane.intesectsWith(dominos[0])) {
+    dominos[0].tipOver();
+    inclinedPlane.animationPhase = 8;
+    trackObj = dominos[0];
+  }
+
   for (let i = 0; i < dominos.length - 1; i++) {
     if (dominos[i].falling && !dominos[i + 1].falling) {
       if (dominos[i].intersectsWithDomino(dominos[i + 1])) {
         dominos[i + 1].tipOver();
         dominos[i].constrainToDomino(dominos[i + 1]);
+        trackObj = dominos[i + 1];
       }
     }
   }
-  
-  if (pendulum.intersectsWith(inclinedPlane)) {
-    inclinedPlane.animationPhase = 1;
-  }
-  if (inclinedPlane.intesectsWith(dominos[0])) {
-    dominos[0].tipOver();
-    inclinedPlane.animationPhase = 8;
-  }
+
   if (lastDomino.falling && !seeSaw.rotating) {
-      if (lastDomino.intersectsWithSeeSaw(seeSaw)) {
-          seeSaw.startRotation();
-          catapultBall.launchBall();
-          lastDomino.constrainToSeeSaw(seeSaw);
+    if (lastDomino.intersectsWithSeeSaw(seeSaw)) {
+      seeSaw.startRotation();
+      catapultBall.launchBall();
+      lastDomino.constrainToSeeSaw(seeSaw);
+      trackObj = catapultBall;
     }
   }
 
   controls.update();
-  renderer.render(scene, camera);
+  cameraController.setFocusPoint(trackObj.getFocusPoint());
+  cameraController.update();
+  renderer.render(scene, cameraController.camera);
   requestAnimationFrame(animate);
 }
 

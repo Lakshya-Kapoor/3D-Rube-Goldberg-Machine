@@ -101,6 +101,15 @@ export default class Pendulum extends BaseObject {
     return this.collider.intersectsBox(other.collider);
   }
 
+  getFocusPoint() {
+    this.bobObj.updateWorldMatrix(true);
+
+    const worldPos = new THREE.Vector3();
+    this.bobObj.getWorldPosition(worldPos);
+
+    return worldPos;
+  }
+
   physics(dt) {
     if (this.finished) return;
 

@@ -64,6 +64,15 @@ export default class Domino extends BaseObject {
     this.falling = true;
   }
 
+  getFocusPoint() {
+    this.tipObj.updateWorldMatrix(true);
+
+    const worldPos = new THREE.Vector3();
+    this.tipObj.getWorldPosition(worldPos);
+
+    return worldPos;
+  }
+
   physics(dt) {
     if (!this.falling) return;
 
