@@ -9,7 +9,7 @@ export class CameraController {
     this.followMode = false;
     this.focusPoint = new THREE.Vector3();
     this.offset = new THREE.Vector3(-50, 100, 100);
-    this.lerpFactor = 0.01; // Smoothing factor (0-1, lower = smoother)
+    this.lerpFactor = 0.05; // Smoothing factor (0-1, lower = smoother)
     this.targetPosition = new THREE.Vector3();
     this.targetLookAt = new THREE.Vector3();
   }

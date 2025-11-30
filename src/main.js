@@ -25,12 +25,21 @@ function roomInit() {
 
 function spotLightTrackObj (obj) {
   const movingSpotLightIdx = 2;
-  const focusOffset = new THREE.Vector3(0, 100, 0);
-  globalUniforms.lights.value[movingSpotLightIdx].position.copy(obj.getFocusPoint().add(focusOffset));
+  const focusOffset = 100;
+  let trackPosition = obj.getFocusPoint().clone();
+  trackPosition.y = focusOffset;
+  globalUniforms.lights.value[movingSpotLightIdx].position.copy(trackPosition);
+
+  // const position = cameraController.camera.position.clone();
+  // globalUniforms.lights.value[movingSpotLightIdx].position.copy(position);
+  
+  // // Calculate direction from spotlight to the focus point (same as camera look-at)
+  // const direction = cameraController.targetLookAt.clone().sub(position).normalize();
+  // globalUniforms.lights.value[movingSpotLightIdx].direction.copy(direction);
 }
 
-const { scene, camera, renderer, controls } = app;
-
+const { scene, camera, renderer, controls,cameraController } = app;
+cameraController.toggleFollowMode();
 
 
 const room = roomInit();
