@@ -84,6 +84,7 @@ void main() {
                 } else {
                     spotEffect = 0.4;
                 }
+                spotEffect = smoothstep(lights[i].outerCutoff, lights[i].cutoff, theta);
             }
             result += ambient + (diffuse + specular) * spotEffect;
         }

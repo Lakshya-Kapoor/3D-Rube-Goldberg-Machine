@@ -5,7 +5,6 @@ import {
   pointLight1LC,
   spotLight1LC,
   spotLight2LC,
-  spotLight3LC,
   cloneLightCoefficients,
 } from "../utils/lightCoefficents.js";
 

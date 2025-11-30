@@ -79,6 +79,7 @@ placeLeftAt(catapultBall, 165);
 
 
 const clock = new THREE.Clock();
+
 function animate() {
   const dt = clock.getDelta();
 
@@ -101,7 +102,7 @@ function animate() {
   if (pendulum.intersectsWith(inclinedPlane)) {
     inclinedPlane.animationPhase = 1;
   }
-  if (inclinedPlane.intesectsWith(dominos[0]) || true) {
+  if (inclinedPlane.intesectsWith(dominos[0])) {
     dominos[0].tipOver();
     inclinedPlane.animationPhase = 8;
   }
