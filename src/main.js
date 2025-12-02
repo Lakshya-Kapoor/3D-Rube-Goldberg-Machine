@@ -35,7 +35,6 @@ function spotLightTrackObj(obj) {
 }
 
 const { scene, camera, renderer, controls, cameraController } = app;
-cameraController.toggleFollowMode();
 
 const room = roomInit();
 scene.add(room);
@@ -98,9 +97,11 @@ function animate() {
   }
 
   if (inclinedPlane.intesectsWith(dominos[0])) {
+    console.log("Hit first domino");
     dominos[0].tipOver();
     inclinedPlane.animationPhase = 8;
     trackObj = dominos[0];
+    console.log("Tracking first domino", trackObj);
   }
 
   for (let i = 0; i < dominos.length - 1; i++) {

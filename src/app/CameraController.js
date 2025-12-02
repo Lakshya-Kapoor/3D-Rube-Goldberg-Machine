@@ -6,7 +6,8 @@ export class CameraController {
     this.controls = controls;
 
     this.defaultPosition = camera.position.clone();
-    this.followMode = false;
+    this.followMode = true;
+    this.controls.enabled = false; // Disable orbit controls by default in follow mode
     this.focusPoint = new THREE.Vector3();
     this.offset = new THREE.Vector3(-50, 100, 100);
     this.lerpFactor = 0.05; // Smoothing factor (0-1, lower = smoother)
@@ -21,6 +22,11 @@ export class CameraController {
   toggleFollowMode() {
     this.followMode = !this.followMode;
     this.controls.enabled = !this.followMode; // Disable orbit controls in follow mode
+
+    // birds eye view when not following
+    if (!this.followMode) {
+      this.camera.position.set(-100, 100, 100);
+    }
   }
 
   update() {

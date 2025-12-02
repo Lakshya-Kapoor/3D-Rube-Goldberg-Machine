@@ -6,11 +6,7 @@ import {
   placeNearAt,
 } from "../utils/placeHelper.js";
 import { MeshObject } from "./MeshObject.js";
-import {
-  ball2MC,
-  inclinedPlaneMC,
-  sampleMC,
-} from "../utils/materialCoefficents.js";
+import { ball2MC, inclinedPlaneMC } from "../utils/materialCoefficents.js";
 import { assetManager } from "../utils/assetManager.js";
 
 export default class InclinedPlane extends BaseObject {
@@ -142,95 +138,203 @@ export default class InclinedPlane extends BaseObject {
     this.ball.position.y +=
       this.startHieght / 2 + this.ball.geometry.parameters.radius;
     this.add(this.ball);
+
     this.animationPhase = 0;
-    this.ballTranslateVector = new THREE.Vector3(0, 0, 0);
+
+    this.velocity = new THREE.Vector3(0, 0, 0);
+    this.gravity = 10.0;
+    this.friction = 0.995;
+    this.restitution = 0.7;
+    this.rollingFactor = 5 / 7;
 
     this.ballRotationAxis = new THREE.Vector3();
     this.ballUp = new THREE.Vector3(0, 1, 0);
     this.ballAngularSpeed = 0;
 
     this.collider = new THREE.Box3();
+
+    this.radius = this.ball.geometry.parameters.radius;
   }
 
-  checkAnimationPhase() {
-    const radius = this.ball.geometry.parameters.radius;
+  getCurrentSurface() {
+    const radius = this.radius;
+    const ballPos = this.ball.position;
+
+    const xWedgeStartX = this.sideWall1.position.x + this.sideWallWidth / 2;
+    const xWedgeEndX =
+      this.xBox.position.x + (this.xSlantLen - this.planeWidth) / 2;
+
+    const platformStartX = xWedgeEndX;
+
+    const zWedgeStartZ = this.sideWall3.position.z + this.planeWidth / 2;
+    const zWedgeEndZ = this.zWedge.position.z + this.zSlantLen / 2;
+
+    const platformY = this.xBox.position.y + this.turnHeight / 2 + radius;
+
+    if (ballPos.x < xWedgeStartX) {
+      return {
+        type: "start_flat",
+        theta: 0,
+        normal: new THREE.Vector3(0, 1, 0),
+      };
+    }
+
     if (
-      this.animationPhase === 1 &&
-      this.ball.position.x >= this.sideWall1.position.x + this.sideWallWidth / 2
+      ballPos.x >= xWedgeStartX &&
+      ballPos.x < platformStartX &&
+      ballPos.y > platformY + 0.1
     ) {
-      this.ballTranslateVector.set(0, 0, 0);
-      this.ball.position.x =
-        this.sideWall1.position.x +
-        this.sideWallWidth / 2 +
-        radius * Math.sin(this.theta1);
-      this.animationPhase = 2;
-    } else if (
-      this.animationPhase === 2 &&
-      this.ball.position.y <=
-        this.xBox.position.y + this.turnHeight / 2 + radius
+      return {
+        type: "x_wedge",
+        theta: this.theta1,
+        normal: new THREE.Vector3(
+          -Math.sin(this.theta1),
+          Math.cos(this.theta1),
+          0
+        ),
+        direction: new THREE.Vector3(1, 0, 0),
+      };
+    }
+
+    if (
+      ballPos.y >= platformY - 0.1 &&
+      ballPos.y <= platformY + 0.1 &&
+      ballPos.z < zWedgeStartZ
     ) {
-      this.ballTranslateVector.set(this.ballTranslateVector.x, 0, 0);
-      this.ball.position.x =
-        this.xBox.position.x + (this.xSlantLen - this.planeWidth) / 2 + radius;
-      this.ball.position.y =
-        this.xBox.position.y + this.turnHeight / 2 + radius;
-      this.animationPhase = 3;
-    } else if (
-      this.animationPhase === 3 &&
-      this.ball.position.x >=
-        this.sideWall3.position.x - this.sideWallWidth / 2 - radius
-    ) {
-      this.ballTranslateVector.set(-this.ballTranslateVector.x, 0, 0);
-      this.animationPhase = 4;
-    } else if (
-      this.animationPhase === 4 &&
-      this.ball.position.x <= this.zWedge.position.x
-    ) {
-      this.ballTranslateVector.set(0, 0, 0);
-      this.ball.position.y =
-        this.xBox.position.y + this.turnHeight / 2 + radius;
-      this.animationPhase = 5;
-    } else if (
-      this.animationPhase === 5 &&
-      this.ball.position.z >=
-        this.sideWall3.position.z + this.planeWidth / 2 + radius
-    ) {
-      this.ballTranslateVector.set(0, 0, 0);
-      this.ball.position.z =
-        this.sideWall3.position.z +
-        this.planeWidth / 2 +
-        radius * Math.sin(this.theta2);
-      this.animationPhase = 6;
-    } else if (
-      this.animationPhase === 6 &&
-      this.ball.position.y <=
-        this.xBox.position.y - this.turnHeight / 2 + radius
-    ) {
-      this.ballTranslateVector.set(0, 0, this.ballTranslateVector.z);
-      this.ball.position.z =
-        this.zWedge.position.z + this.zSlantLen / 2 + radius;
-      this.ball.position.y =
-        this.xBox.position.y - this.turnHeight / 2 + radius;
-      this.animationPhase = 7;
+      return { type: "platform", theta: 0, normal: new THREE.Vector3(0, 1, 0) };
+    }
+
+    if (ballPos.z >= zWedgeStartZ && ballPos.z < zWedgeEndZ) {
+      return {
+        type: "z_wedge",
+        theta: this.theta2,
+        normal: new THREE.Vector3(
+          0,
+          Math.cos(this.theta2),
+          -Math.sin(this.theta2)
+        ),
+        direction: new THREE.Vector3(0, 0, 1),
+      };
+    }
+
+    if (ballPos.z >= zWedgeEndZ) {
+      return { type: "ground", theta: 0, normal: new THREE.Vector3(0, 1, 0) };
+    }
+
+    return { type: "platform", theta: 0, normal: new THREE.Vector3(0, 1, 0) };
+  }
+
+  constrainToSurface() {
+    const radius = this.radius;
+    const ballPos = this.ball.position;
+
+    const xWedgeStartX = this.sideWall1.position.x + this.sideWallWidth / 2;
+    const xWedgeEndX =
+      this.xBox.position.x + (this.xSlantLen - this.planeWidth) / 2;
+
+    const platformY = this.xBox.position.y + this.turnHeight / 2 + radius;
+    const groundY = this.xBox.position.y - this.turnHeight / 2 + radius;
+
+    const zWedgeStartZ = this.sideWall3.position.z + this.planeWidth / 2;
+
+    const surface = this.getCurrentSurface();
+
+    if (surface.type === "start_flat") {
+      const startY = this.sideWall1.position.y + this.startHieght / 2 + radius;
+      ballPos.y = startY;
+    } else if (surface.type === "x_wedge") {
+      const distFromStart = ballPos.x - xWedgeStartX;
+      const heightDrop = distFromStart * Math.tan(this.theta1);
+      const startY =
+        this.xBox.position.y +
+        this.turnHeight / 2 +
+        (this.startHieght - this.turnHeight) +
+        radius;
+      ballPos.y = startY - heightDrop;
+
+      if (ballPos.y < platformY) {
+        ballPos.y = platformY;
+        ballPos.x = xWedgeEndX + radius;
+      }
+    } else if (surface.type === "platform") {
+      ballPos.y = platformY;
+    } else if (surface.type === "z_wedge") {
+      const distFromStart = ballPos.z - zWedgeStartZ;
+      const heightDrop = distFromStart * Math.tan(this.theta2);
+      const expectedY = platformY - heightDrop;
+
+      if (expectedY < groundY) {
+        ballPos.y = groundY;
+        const totalSpeed = Math.sqrt(
+          this.velocity.z ** 2 + this.velocity.y ** 2
+        );
+        this.velocity.z = totalSpeed;
+        this.velocity.y = 0;
+      } else {
+        ballPos.y = expectedY;
+      }
+    } else if (surface.type === "ground") {
+      ballPos.y = groundY;
     }
   }
+
+  handleWallCollisions() {
+    const radius = this.radius;
+    const ballPos = this.ball.position;
+
+    const leftWallX =
+      this.sideWall1.position.x + this.sideWallWidth / 2 + radius;
+    if (ballPos.x < leftWallX && this.velocity.x < 0) {
+      ballPos.x = leftWallX;
+      this.velocity.x *= -this.restitution;
+    }
+
+    const rightWallX =
+      this.sideWall3.position.x - this.sideWallWidth / 2 - radius;
+    const platformY = this.xBox.position.y + this.turnHeight / 2 + radius;
+    if (
+      ballPos.x > rightWallX &&
+      this.velocity.x > 0 &&
+      Math.abs(ballPos.y - platformY) < 1
+    ) {
+      ballPos.x = rightWallX;
+      const incomingSpeed = Math.abs(this.velocity.x);
+      this.velocity.x = -incomingSpeed * 0.25 * this.restitution;
+      this.velocity.z = incomingSpeed * 0.7 * this.restitution;
+    }
+
+    const backWallZ =
+      this.sideWall2.position.z + this.sideWallWidth / 2 + radius;
+    const zWedgeStartX =
+      this.xBox.position.x +
+      (this.xSlantLen - this.planeWidth) / 2 -
+      this.planeWidth / 2;
+    if (
+      ballPos.z < backWallZ &&
+      this.velocity.z < 0 &&
+      ballPos.x > zWedgeStartX
+    ) {
+      ballPos.z = backWallZ;
+      this.velocity.z *= -this.restitution;
+    }
+  }
+
   intesectsWith(other) {
     return this.collider.intersectsBox(other.collider);
   }
+
   rotateBall(dt) {
-    const speed = this.ballTranslateVector.length();
+    const speed = this.velocity.length();
     if (speed <= 0.001) {
       this.ballAngularSpeed = 0;
       return;
     }
-    this.ballAngularSpeed = speed / this.ball.geometry.parameters.radius;
-    if (
-      Math.abs(this.ballTranslateVector.x) >
-      Math.abs(this.ballTranslateVector.z)
-    ) {
-      this.ballRotationAxis.set(0, 0, -Math.sign(this.ballTranslateVector.x));
+    this.ballAngularSpeed = speed / this.radius;
+
+    if (Math.abs(this.velocity.x) > Math.abs(this.velocity.z)) {
+      this.ballRotationAxis.set(0, 0, -Math.sign(this.velocity.x));
     } else {
-      this.ballRotationAxis.set(Math.sign(this.ballTranslateVector.z), 0, 0);
+      this.ballRotationAxis.set(Math.sign(this.velocity.z), 0, 0);
     }
   }
 
@@ -244,24 +348,69 @@ export default class InclinedPlane extends BaseObject {
   }
 
   physics(dt) {
-    this.checkAnimationPhase();
-    if (this.animationPhase === 1) {
-      this.ballTranslateVector.x += 0.98 * dt;
-    } else if (this.animationPhase === 2) {
-      this.ballTranslateVector.x += 0.98 * dt * Math.cos(this.theta1);
-      this.ballTranslateVector.y -= 0.98 * dt * Math.sin(this.theta1);
-    } else if (this.animationPhase === 3) {
-      this.ballTranslateVector.x -= 0.98 * dt;
-    } else if (this.animationPhase === 4) {
-      this.ballTranslateVector.x += 0.98 * dt;
-    } else if (this.animationPhase === 5) {
-      this.ballTranslateVector.z += 0.98 * dt;
-    } else if (this.animationPhase === 6) {
-      this.ballTranslateVector.z += 0.98 * dt * Math.cos(this.theta2);
-      this.ballTranslateVector.y -= 0.98 * dt * Math.sin(this.theta2);
-    } else if (this.animationPhase === 8) {
-      this.ballTranslateVector.set(0, 0, 0);
+    if (this.animationPhase === 0) {
+      return;
     }
+
+    if (this.animationPhase === 8) {
+      this.velocity.z = -Math.abs(this.velocity.z) * this.restitution;
+      this.velocity.x = 0;
+      this.velocity.y = 0;
+
+      const speed = Math.abs(this.velocity.z);
+      if (speed > 0.05) {
+        this.velocity.z *= this.friction;
+      } else {
+        this.velocity.set(0, 0, 0);
+      }
+
+      this.rotateBall(dt);
+      this.ball.rotateOnWorldAxis(
+        this.ballRotationAxis,
+        this.ballAngularSpeed * dt
+      );
+      return;
+    }
+
+    const surface = this.getCurrentSurface();
+
+    if (surface.type === "start_flat") {
+      this.velocity.x += this.gravity * 0.1 * dt;
+
+      this.velocity.x *= this.friction;
+    } else if (surface.type === "x_wedge") {
+      const accel = this.gravity * Math.sin(this.theta1) * this.rollingFactor;
+
+      this.velocity.x += accel * Math.cos(this.theta1) * dt;
+      this.velocity.y -= accel * Math.sin(this.theta1) * dt;
+
+      this.velocity.x *= this.friction;
+      this.velocity.y *= this.friction;
+    } else if (surface.type === "platform") {
+      this.velocity.y = 0;
+
+      this.velocity.x *= this.friction;
+      this.velocity.z *= this.friction;
+    } else if (surface.type === "z_wedge") {
+      const accel = this.gravity * Math.sin(this.theta2) * this.rollingFactor;
+
+      this.velocity.z += accel * Math.cos(this.theta2) * dt;
+      this.velocity.y -= accel * Math.sin(this.theta2) * dt;
+
+      this.velocity.x *= this.friction;
+      this.velocity.y *= this.friction;
+      this.velocity.z *= this.friction;
+    } else if (surface.type === "ground") {
+      this.velocity.y = 0;
+
+      this.velocity.x *= this.friction;
+      this.velocity.z *= this.friction;
+    }
+
+    this.handleWallCollisions();
+
+    this.constrainToSurface();
+
     this.rotateBall(dt);
     this.ball.rotateOnWorldAxis(
       this.ballRotationAxis,
@@ -270,7 +419,8 @@ export default class InclinedPlane extends BaseObject {
   }
 
   animate(dt) {
-    this.ball.position.addScaledVector(this.ballTranslateVector, dt);
+    this.ball.position.addScaledVector(this.velocity, dt);
+
     this.updateMatrixWorld(true);
     this.collider.setFromObject(this.ball);
   }

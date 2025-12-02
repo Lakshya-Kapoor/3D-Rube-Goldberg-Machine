@@ -5,6 +5,7 @@ export function initEventListeners() {
   const btnSpotLight = document.getElementById("spotLight-btn");
   const btnPointLight = document.getElementById("pointLight-btn");
   const btnMovingSpotLight = document.getElementById("movingSpotLight-btn");
+  const btnFollowObject = document.getElementById("followObject-btn");
 
   const setLightActive = (btn, isOn) => {
     btn.classList.toggle("active", isOn);
@@ -31,15 +32,14 @@ export function initEventListeners() {
     setLightActive(btnMovingSpotLight, newState);
   });
 
+  btnFollowObject.addEventListener("click", () => {
+    app.cameraController.toggleFollowMode();
+    btnFollowObject.classList.toggle("active", app.cameraController.followMode);
+  });
+
   setLightActive(btnPointLight, globalUniforms.lights.value[0].on);
   setLightActive(btnSpotLight, globalUniforms.lights.value[1].on);
   setLightActive(btnMovingSpotLight, globalUniforms.lights.value[2].on);
-
-  window.addEventListener("keydown", (e) => {
-    if (e.altKey && e.key === "c") {
-      app.cameraController.toggleFollowMode();
-    }
-  });
 
   window.addEventListener("resize", () => {
     app.camera.aspect = window.innerWidth / window.innerHeight;
