@@ -15,15 +15,30 @@
     </script>
   </head>
   <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+      <div class="loading-content">
+        <h1 class="loading-text">Loading Assets</h1>
+        <div class="loader-container">
+          <div class="loader"></div>
+        </div>
+        <p class="loading-progress">0%</p>
+      </div>
+    </div>
+
     <div class="app">
       <canvas id="main-canvas"></canvas>
     </div>
 
     <div class="controls-container">
       <div class="light-buttons">
-        <button id="pointLight-btn" class="light-btn active">Point Light</button>
+        <button id="pointLight-btn" class="light-btn active">
+          Point Light
+        </button>
         <button id="spotLight-btn" class="light-btn active">Spot Light</button>
-        <button id="movingSpotLight-btn" class="light-btn active">Moving Spot Light</button>
+        <button id="movingSpotLight-btn" class="light-btn active">
+          Moving Spot Light
+        </button>
       </div>
       <p class="instruction">Press <kbd>Alt + C</kbd> to toggle camera view</p>
     </div>

@@ -35,7 +35,6 @@ export async function setup() {
     0.1,
     1000
   );
-  app.camera.position.set(-2000, 1000, 2000);
 
   app.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   app.renderer.setSize(window.innerWidth, window.innerHeight);

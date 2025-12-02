@@ -1,5 +1,5 @@
 import { PLYLoader } from "three/addons/loaders/PLYLoader.js";
-import { TextureLoader } from "three";
+import { TextureLoader, LoadingManager } from "three";
 
 class AssetManager {
   GEOMETRY_DIR = "./assets/models";
@@ -21,8 +21,45 @@ class AssetManager {
 
     this.geometry = {};
     this.texture = {};
-    this._plyLoader = new PLYLoader();
-    this._textureLoader = new TextureLoader();
+
+    // Create loading manager for tracking progress
+    this._loadingManager = new LoadingManager();
+    this._plyLoader = new PLYLoader(this._loadingManager);
+    this._textureLoader = new TextureLoader(this._loadingManager);
+
+    // Loading UI elements
+    this._loadingScreen = null;
+    this._loadingProgress = null;
+
+    this._setupLoadingUI();
+    this._setupLoadingManager();
+  }
+
+  _setupLoadingUI() {
+    this._loadingScreen = document.getElementById("loading-screen");
+    this._loadingProgress = document.querySelector(".loading-progress");
+  }
+
+  _setupLoadingManager() {
+    this._loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+      const progress = (itemsLoaded / itemsTotal) * 100;
+      if (this._loadingProgress) {
+        this._loadingProgress.textContent = `${Math.round(progress)}%`;
+      }
+    };
+
+    this._loadingManager.onLoad = () => {
+      this._hideLoadingScreen();
+    };
+  }
+
+  _hideLoadingScreen() {
+    if (this._loadingScreen) {
+      this._loadingScreen.classList.add("fade-out");
+      setTimeout(() => {
+        this._loadingScreen.classList.add("hidden");
+      }, 500);
+    }
   }
 
   geometryPath(name) {
